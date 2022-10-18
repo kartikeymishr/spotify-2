@@ -43,7 +43,8 @@ const Center = () => {
             <header className="absolute top-5 right-8">
                 <div className="flex items-center bg-black space-x-3
                             opacity-90 hover:opacity-80 cursor-pointer
-                            rounded-full p-1 pr-2"
+                            rounded-full p-1 pr-2
+                            hover:scale-105 transition transform duration-200 ease-out"
                      onClick={signOut}
                 >
                     <img
