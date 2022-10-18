@@ -2,13 +2,17 @@ import useSpotify from "../hooks/useSpotify";
 import {useSession} from "next-auth/react";
 import {useRecoilState} from "recoil";
 import {currentTrackIdState, isPlayingState} from "../atoms/songAtom";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import useSongInfo from "../hooks/useSongInfo";
 import {ArrowsRightLeftIcon, ArrowUturnLeftIcon, SpeakerWaveIcon as VolumeDownIcon} from '@heroicons/react/24/outline'
 import {
-    ArrowPathIcon, BackwardIcon, PlayCircleIcon,
-    PauseCircleIcon, ForwardIcon, SpeakerWaveIcon as VolumeUpIcon
+    BackwardIcon,
+    ForwardIcon,
+    PauseCircleIcon,
+    PlayCircleIcon,
+    SpeakerWaveIcon as VolumeUpIcon
 } from '@heroicons/react/24/solid'
+import {debounce} from "lodash";
 
 const Player = () => {
     const spotifyApi = useSpotify()
@@ -25,6 +29,18 @@ const Player = () => {
             setVolume(50)
         }
     }, [currentTrackId, spotifyApi, session])
+
+    useEffect(() => {
+        if (volume > 0 && volume < 100) {
+            debouncedAdjustVolume(volume)
+        }
+    }, [volume])
+
+    const debouncedAdjustVolume = useCallback(debounce((volume) => {
+        spotifyApi.setVolume(volume).catch(err => {
+            console.error(err);
+        })
+    }, 500), [])
 
     const fetchCurrentSong = () => {
         if (!songInfo) {
@@ -85,8 +101,6 @@ const Player = () => {
             <div className="flex items-center justify-evenly">
                 <ArrowsRightLeftIcon className="button"/>
                 <BackwardIcon className="button" onClick={skipToPrevious}/>
-                {/*<VolumeUpIcon className="button"/>*/}
-                {/*<VolumeDownIcon className="button"/>*/}
 
                 {isPlaying ? (
                         <PauseCircleIcon
@@ -104,6 +118,23 @@ const Player = () => {
 
                 <ForwardIcon className="button" onClick={skipToNext}/>
                 <ArrowUturnLeftIcon className="button"/>
+            </div>
+
+            <div className="flex items-center space-x-4 justify-end">
+                <VolumeDownIcon onClick={() => {
+                    volume > 0 && setVolume(volume - 10)
+                }} className="button"/>
+                <input
+                    className="w-16 md:w-28"
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={volume}
+                    onChange={e => setVolume(Number(e.target.value))}
+                />
+                <VolumeUpIcon onClick={() => {
+                    volume < 100 && setVolume(volume + 10)
+                }} className="button"/>
             </div>
         </div>
     )
