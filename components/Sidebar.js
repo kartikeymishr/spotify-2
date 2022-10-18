@@ -1,8 +1,12 @@
 import {
-    HomeIcon, MagnifyingGlassIcon, BuildingLibraryIcon,
-    HeartIcon, RssIcon, PlusCircleIcon, UserIcon
+    BuildingLibraryIcon,
+    HeartIcon,
+    HomeIcon,
+    MagnifyingGlassIcon,
+    PlusCircleIcon,
+    RssIcon
 } from "@heroicons/react/24/outline";
-import {signOut, useSession} from 'next-auth/react'
+import {useSession} from 'next-auth/react'
 import {useEffect, useState} from "react";
 import useSpotify from "../hooks/useSpotify";
 import {useRecoilState} from "recoil";
